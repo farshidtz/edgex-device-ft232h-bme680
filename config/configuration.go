@@ -26,7 +26,8 @@ type ServiceConfig struct {
 }
 
 type DriverConfig struct {
-	PythonPath string
+	PythonPath    string
+	PythonWorkDir string
 }
 
 // UpdateFromRaw updates the service's full configuration from raw data received from

@@ -18,7 +18,7 @@ HealthCheckInterval = "10s"
 Host = "localhost"
 Port = 59999 # Device serivce are assigned the 599xx range
 ServerBindAddr = ""  # blank value defaults to Service.Host value
-StartupMsg = "device simple started"
+StartupMsg = "device service started"
 # MaxRequestSize limit the request body size in kilobyte of put command
 MaxRequestSize = 0 # value 0 unlimit the request size.
 RequestTimeout = "20s"
@@ -31,10 +31,10 @@ RequestTimeout = "20s"
   CORSExposeHeaders = "Cache-Control, Content-Language, Content-Length, Content-Type, Expires, Last-Modified, Pragma, X-Correlation-ID"
   CORSMaxAge = 3600
 
-[Registry]
-Host = "localhost"
-Port = 8500
-Type = "consul"
+# [Registry]
+# Host = "localhost"
+# Port = 8500
+# Type = "consul"
 
 [Clients]
   [Clients.core-data]
@@ -58,7 +58,7 @@ PublishTopicPrefix = "edgex/events/device" # /<device-profile-name>/<device-name
   [MessageQueue.Optional]
   # Default MQTT Specific options that need to be here to enable environment variable overrides of them
   # Client Identifiers
-  ClientId = "device-simple"
+  ClientId = ""
   # Connection information
   Qos = "0" # Quality of Sevice values are 0 (At most once), 1 (At least once) or 2 (Exactly once)
   KeepAlive = "10" # Seconds (must be 2 or greater)
@@ -75,7 +75,7 @@ PublishTopicPrefix = "edgex/events/device" # /<device-profile-name>/<device-name
 Type = "vault"
 Host = "localhost"
 Port = 8200
-Path = "device-simple/"
+Path = "device-ft232h-bme680/"
 Protocol = "http"
 RootCaCertPath = ""
 ServerName = ""
@@ -112,3 +112,4 @@ TokenFile = "./secrets-token.json"
 # Custom configuration
 [Driver]
 PythonPath = "/bin/python"
+PythonWorkDir = "./"

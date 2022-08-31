@@ -81,6 +81,7 @@ func (s *Driver) HandleReadCommands(deviceName string, protocols map[string]mode
 			Env: []string{
 				"BLINKA_FT232H=true",
 			},
+			Dir: s.serviceConfig.Driver.PythonWorkDir,
 		}
 		cmd.Args = append(cmd.Args, cmd.Path,
 			"ft232h-bme680.py", // script path
@@ -147,6 +148,7 @@ func (s *Driver) HandleWriteCommands(deviceName string, protocols map[string]mod
 				Env: []string{
 					"BLINKA_FT232H=true",
 				},
+				Dir: s.serviceConfig.Driver.PythonWorkDir,
 			}
 			cmd.Args = append(cmd.Args, cmd.Path,
 				"ft232h-gpio.py", // script path
