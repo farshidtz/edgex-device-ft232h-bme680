@@ -27,7 +27,6 @@ import (
 
 type Driver struct {
 	lc            logger.LoggingClient
-	fanState      bool
 	serviceConfig *config.ServiceConfig
 }
 
@@ -126,22 +125,18 @@ func (s *Driver) HandleReadCommands(deviceName string, protocols map[string]mode
 // a ResourceOperation for a specific device resource.
 // Since the commands are actuation commands, params provide parameters for the individual
 // command.
-func (s *Driver) HandleWriteCommands(deviceName string, protocols map[string]models.ProtocolProperties, reqs []sdkModels.CommandRequest,
-	params []*sdkModels.CommandValue) error {
-	var err error
-
-	fmt.Printf("reqs: %v\n", reqs)
-	fmt.Printf("protocols: %v\n", protocols)
+func (s *Driver) HandleWriteCommands(deviceName string, protocols map[string]models.ProtocolProperties, reqs []sdkModels.CommandRequest, params []*sdkModels.CommandValue) error {
 
 	for i, r := range reqs {
 		s.lc.Debugf("Driver.HandleWriteCommands: protocols: %v, resource: %v, parameters: %v, attributes: %v", protocols, reqs[i].DeviceResourceName, params[i], reqs[i].Attributes)
+
 		switch r.DeviceResourceName {
 		case "State":
-			if s.fanState, err = params[i].BoolValue(); err != nil {
+			fanState, err := params[i].BoolValue()
+			if err != nil {
 				err := fmt.Errorf("Driver.HandleWriteCommands; the data type of parameter should be Boolean, parameter: %s", params[0].String())
 				return err
 			}
-			fmt.Printf("Fan state: %v\n", s.fanState)
 
 			cmd := exec.Cmd{
 				Path: s.serviceConfig.Driver.PythonPath,
@@ -153,7 +148,7 @@ func (s *Driver) HandleWriteCommands(deviceName string, protocols map[string]mod
 			cmd.Args = append(cmd.Args, cmd.Path,
 				"ft232h-gpio.py", // script path
 				"-pin", protocols["gpio"]["Pin"],
-				"-value", fmt.Sprint(s.fanState))
+				"-value", fmt.Sprint(fanState))
 
 			b, err := cmd.CombinedOutput()
 			if err != nil {
