@@ -27,13 +27,12 @@ import (
 
 type Driver struct {
 	lc            logger.LoggingClient
-	fanState      bool
 	serviceConfig *config.ServiceConfig
 }
 
 // Initialize performs protocol-specific initialization for the device
 // service.
-func (s *Driver) Initialize(lc logger.LoggingClient, asyncCh chan<- *sdkModels.AsyncValues, deviceCh chan<- []sdkModels.DiscoveredDevice) error {
+func (s *Driver) Initialize(lc logger.LoggingClient, _ chan<- *sdkModels.AsyncValues, _ chan<- []sdkModels.DiscoveredDevice) error {
 	s.lc = lc
 	s.serviceConfig = &config.ServiceConfig{}
 
@@ -81,6 +80,7 @@ func (s *Driver) HandleReadCommands(deviceName string, protocols map[string]mode
 			Env: []string{
 				"BLINKA_FT232H=true",
 			},
+			Dir: s.serviceConfig.Driver.PythonWorkDir,
 		}
 		cmd.Args = append(cmd.Args, cmd.Path,
 			"ft232h-bme680.py", // script path
@@ -125,33 +125,30 @@ func (s *Driver) HandleReadCommands(deviceName string, protocols map[string]mode
 // a ResourceOperation for a specific device resource.
 // Since the commands are actuation commands, params provide parameters for the individual
 // command.
-func (s *Driver) HandleWriteCommands(deviceName string, protocols map[string]models.ProtocolProperties, reqs []sdkModels.CommandRequest,
-	params []*sdkModels.CommandValue) error {
-	var err error
-
-	fmt.Printf("reqs: %v\n", reqs)
-	fmt.Printf("protocols: %v\n", protocols)
+func (s *Driver) HandleWriteCommands(deviceName string, protocols map[string]models.ProtocolProperties, reqs []sdkModels.CommandRequest, params []*sdkModels.CommandValue) error {
 
 	for i, r := range reqs {
 		s.lc.Debugf("Driver.HandleWriteCommands: protocols: %v, resource: %v, parameters: %v, attributes: %v", protocols, reqs[i].DeviceResourceName, params[i], reqs[i].Attributes)
+
 		switch r.DeviceResourceName {
 		case "State":
-			if s.fanState, err = params[i].BoolValue(); err != nil {
+			fanState, err := params[i].BoolValue()
+			if err != nil {
 				err := fmt.Errorf("Driver.HandleWriteCommands; the data type of parameter should be Boolean, parameter: %s", params[0].String())
 				return err
 			}
-			fmt.Printf("Fan state: %v\n", s.fanState)
 
 			cmd := exec.Cmd{
 				Path: s.serviceConfig.Driver.PythonPath,
 				Env: []string{
 					"BLINKA_FT232H=true",
 				},
+				Dir: s.serviceConfig.Driver.PythonWorkDir,
 			}
 			cmd.Args = append(cmd.Args, cmd.Path,
 				"ft232h-gpio.py", // script path
 				"-pin", protocols["gpio"]["Pin"],
-				"-value", fmt.Sprint(s.fanState))
+				"-value", fmt.Sprint(fanState))
 
 			b, err := cmd.CombinedOutput()
 			if err != nil {
@@ -179,7 +176,7 @@ func (s *Driver) Stop(force bool) error {
 // AddDevice is a callback function that is invoked
 // when a new Device associated with this Device Service is added
 func (s *Driver) AddDevice(deviceName string, protocols map[string]models.ProtocolProperties, adminState models.AdminState) error {
-	s.lc.Debugf("a new Device is added: %s", deviceName)
+	s.lc.Debugf("A new Device is added: %s", deviceName)
 	return nil
 }
 

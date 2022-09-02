@@ -1,32 +1,23 @@
+# List of devices connected to Adafruit FT232H
 [[DeviceList]]
   Name = "GasSensor"
   ProfileName = "BME680"
-  # Description = "Gas sensor"
+  Description = "BME680 Gas sensor connected to FT232H over I2C"
   # Labels = [ "industrial" ]
   [DeviceList.Protocols]
   [DeviceList.Protocols.i2c]
     Address = "0x76"
   [[DeviceList.AutoEvents]]
-    Interval = "60s"
+    Interval = "5s"
     OnChange = false
     SourceName = "ReadAll"
-  # [[DeviceList.AutoEvents]]
-  #   Interval = "30s"
-  #   OnChange = false
-  #   SourceName = "Image"
+
 [[DeviceList]]
   Name = "Fan"
   ProfileName = "FanController"
-  # Description = "Gas sensor"
+  Description = "Fan connected to FT232H's GPIO"
   # Labels = [ "industrial" ]
   [DeviceList.Protocols]
   [DeviceList.Protocols.gpio]
-    Pin = "D4"
-  # [[DeviceList.AutoEvents]]
-  #   Interval = "30s"
-  #   OnChange = false
-  #   SourceName = "ReadAll"
-  # [[DeviceList.AutoEvents]]
-  #   Interval = "30s"
-  #   OnChange = false
-  #   SourceName = "Image"
+    Pin = "C0"
+

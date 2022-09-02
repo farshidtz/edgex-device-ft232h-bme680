@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	serviceName string = "device-simple"
+	serviceName string = "device-ft232h-bme680"
 )
 
 func main() {

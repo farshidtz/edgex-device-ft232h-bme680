@@ -1,0 +1,113 @@
+name: edgex-device-ft232h-bme680
+base: core22
+summary: EdgeX FT232H BME680 Device Service
+description: |
+  Device service to:
+  - Read from BME680 connected to FT232H over I2C
+  - Control the GPIO on FT232H
+version: git
+
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+
+grade: stable
+confinement: classic
+# strict + raw-usb interface does not work:
+#  No backend available
+# confinement: strict
+
+slots:
+  edgex-secretstore-token:
+    interface: content
+    content: edgex-secretstore-token
+    source:
+      write: [$SNAP_DATA/device-ft232h-bme680]
+
+# plugs:
+#   device-config:
+#     interface: content 
+#     target: $SNAP_DATA/config/device-ft232h-bme680
+
+layout:
+  /etc/udev/rules.d/11-ftdi.rules:
+    bind-file: $SNAP/etc/udev/rules.d/11-ftdi.rules
+
+apps:
+
+  device-ft232h-bme680:
+    command: bin/device-ft232h-bme680 $CONFIG_PRO_ARG $CONF_ARG $REGISTRY_ARG --overwrite
+    environment:
+      # Comment out because of a possible consul bootstrapper bug
+      # CONFIG_PRO_ARG: "--cp=consul.http://localhost:8500"
+      # REGISTRY_ARG: "--registry"
+      CONFIG_PRO_ARG: ""
+      REGISTRY_ARG: ""
+      CONF_ARG: "--confdir=$SNAP_DATA/config"
+      DEVICE_PROFILESDIR: "$SNAP_DATA/config/profiles"
+      DEVICE_DEVICESDIR: "$SNAP_DATA/config/devices"
+      SECRETSTORE_TOKENFILE: $SNAP_DATA/device-ft232h-bme680/secrets-token.json
+      BLINKA_FT232H: true
+      DRIVER_PYTHONPATH: "$SNAP/bin/python"
+      DRIVER_PYTHONWORKDIR: "$SNAP/bin/"
+    daemon: simple
+    install-mode: disable
+    restart-delay: 1s
+    plugs:
+      - network
+      - network-bind
+      - raw-usb
+
+
+parts:
+  board:
+    source: ./board
+    plugin: python
+    stage-packages:
+      - libusb-1.0-0
+      # - python3
+      # - python3-venv
+    python-packages:
+      - pyftdi
+      - adafruit-blinka
+      - adafruit-circuitpython-bme680
+    override-build: |
+      install -DT 11-ftdi.rules $CRAFT_PART_INSTALL/etc/udev/rules.d/11-ftdi.rules
+
+      craftctl default
+      
+    
+  device-service:
+    source: .
+    plugin: make
+    build-packages:
+      - git
+      # - libzmq3-dev
+      # - pkg-config
+    build-snaps:
+      - go/1.19/stable
+    stage-packages: 
+      - libzmq5
+      - ffmpeg
+    override-build: |
+      cd $CRAFT_PART_SRC
+      # the version is needed for the build
+      # cp $CRAFT_STAGE/version.txt VERSION
+      # make tidy
+      # make build
+      # install -DT "./cmd/device-usb-camera" "$CRAFT_PART_INSTALL/bin/device-usb-camera"
+
+      go build -tags "no_zmq non_delayedstart" -o $CRAFT_PART_INSTALL/bin/device-ft232h-bme680 .
+
+      cp -v *.py  $CRAFT_PART_INSTALL/bin/
+
+      RES=$CRAFT_PART_INSTALL/config
+      mkdir -p $RES
+      cp    res/configuration.toml $RES
+      cp -r res/devices $RES
+      cp -r res/profiles $RES
+      
+      DOC=$CRAFT_PART_INSTALL/usr/share/doc/device-ft232h-bme680
+      mkdir -p $DOC
+      cp Attribution.txt $DOC/Attribution.txt
+      cp LICENSE $DOC/LICENSE
