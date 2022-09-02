@@ -32,7 +32,7 @@ type Driver struct {
 
 // Initialize performs protocol-specific initialization for the device
 // service.
-func (s *Driver) Initialize(lc logger.LoggingClient, asyncCh chan<- *sdkModels.AsyncValues, deviceCh chan<- []sdkModels.DiscoveredDevice) error {
+func (s *Driver) Initialize(lc logger.LoggingClient, _ chan<- *sdkModels.AsyncValues, _ chan<- []sdkModels.DiscoveredDevice) error {
 	s.lc = lc
 	s.serviceConfig = &config.ServiceConfig{}
 
@@ -176,7 +176,7 @@ func (s *Driver) Stop(force bool) error {
 // AddDevice is a callback function that is invoked
 // when a new Device associated with this Device Service is added
 func (s *Driver) AddDevice(deviceName string, protocols map[string]models.ProtocolProperties, adminState models.AdminState) error {
-	s.lc.Debugf("a new Device is added: %s", deviceName)
+	s.lc.Debugf("A new Device is added: %s", deviceName)
 	return nil
 }
 

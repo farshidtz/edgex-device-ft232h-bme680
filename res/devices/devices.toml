@@ -8,7 +8,7 @@
   [DeviceList.Protocols.i2c]
     Address = "0x76"
   [[DeviceList.AutoEvents]]
-    Interval = "2s"
+    Interval = "5s"
     OnChange = false
     SourceName = "ReadAll"
 
@@ -19,5 +19,5 @@
   # Labels = [ "industrial" ]
   [DeviceList.Protocols]
   [DeviceList.Protocols.gpio]
-    Pin = "D4"
+    Pin = "C0"
 

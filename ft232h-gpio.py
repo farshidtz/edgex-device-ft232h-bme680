@@ -1,7 +1,5 @@
 import board
 import digitalio
-
-
 import argparse
 
 # Parse CLI args
@@ -16,3 +14,4 @@ led = digitalio.DigitalInOut(getattr(board, pin))
 led.direction = digitalio.Direction.OUTPUT
 
 led.value = value
+print("Set to ", value)
