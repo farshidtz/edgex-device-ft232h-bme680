@@ -7,6 +7,29 @@ This device service connects EdgeX to FT2322H to:
 - Control the GPIO
 
 
+## Usage
+Get sensor values:
+```
+curl -X 'GET' 'http://localhost:59882/api/v2/device/name/GasSensor/ReadAll' | jq
+```
+
+Set GPIO output:
+```
+curl -X 'PUT' -d '{"State": true}'  'http://localhost:59882/api/v2/device/name/Fan/State' | jq
+```
+```
+curl -X 'PUT' -d '{"State": false}'  'http://localhost:59882/api/v2/device/name/Fan/State' | jq
+```
+
+To delete devices and profiles, so that local updates become effective after a restart:
+```
+# Gas sensor
+curl -X 'DELETE'   'http://localhost:59881/api/v2/device/name/GasSensor' && curl -X 'DELETE'   'http://localhost:59881/api/v2/deviceprofile/name/BME680'
+
+# GPIO
+curl -X 'DELETE'   'http://localhost:59881/api/v2/device/name/Fan' && curl -X 'DELETE'   'http://localhost:59881/api/v2/deviceprofile/name/FanController' 
+```
+
 ## Native build and run
 To setup the driver dependencies, refer to https://learn.adafruit.com/circuitpython-on-any-computer-with-ft232h/linux
 
@@ -32,25 +55,6 @@ Go to `device-service` and configure the devices. Then build and run:
 go run .
 ```
 
-Get sensor values:
-```
-curl -X 'GET' 'http://localhost:59882/api/v2/device/name/GasSensor/ReadAll' | jq
-```
-
-Set GPIO output:
-```
-curl -X 'PUT' -d '{"State": true}'  'http://localhost:59882/api/v2/device/name/Fan/State' | jq
-curl -X 'PUT' -d '{"State": false}'  'http://localhost:59882/api/v2/device/name/Fan/State' | jq
-```
-
-Delete devices and profiles:
-```
-# Gas sensor
-curl -X 'DELETE'   'http://localhost:59881/api/v2/device/name/GasSensor' && curl -X 'DELETE'   'http://localhost:59881/api/v2/deviceprofile/name/BME680'
-
-# GPIO
-curl -X 'DELETE'   'http://localhost:59881/api/v2/device/name/Fan' && curl -X 'DELETE'   'http://localhost:59881/api/v2/deviceprofile/name/FanController' 
-```
 
 ## Snap build and run
 
