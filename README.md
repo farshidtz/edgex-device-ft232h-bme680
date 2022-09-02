@@ -16,6 +16,17 @@ Get a token from edgexfoundry:
 ./add-addon-service.sh
 ```
 
+Update configurations under `./res`:
+```
+res
+├── configuration.toml
+├── devices
+│   └── devices.toml
+└── profiles
+    ├── fan-controller.yaml
+    └── gas-sensor.yaml
+```
+
 Go to `device-service` and configure the devices. Then build and run:
 ```
 go run .
@@ -48,7 +59,27 @@ snapcraft -v
 snap install ./edgex-device-ft232h-bme680_0+git.af8b6dd-dirty_amd64.snap --dangerous --classic
 ./add-addon-service.sh 
 ./connect-snap-interfaces.sh 
-snap start edgex-device-ft232h-bme680.device-ft232h-bme680
+```
+
+Update the configurations under `/var/snap/edgex-device-ft232h-bme680/current/config`:
+```
+/var/snap/edgex-device-ft232h-bme680/current/config
+├── configuration.toml
+├── devices
+│   └── devices.toml
+└── profiles
+    ├── fan-controller.yaml
+    └── gas-sensor.yaml
+```
+
+Start as process in the foreground:
+```
+sudo snap run edgex-device-ft232h-bme680.device-ft232h-bme680
+```
+
+Or start as service:
+```
+snap start edgex-device-ft232h-bme680
 ```
 
 Read the logs:
