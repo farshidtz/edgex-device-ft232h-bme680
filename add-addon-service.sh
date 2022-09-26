@@ -30,5 +30,6 @@ fi
 
 sudo snap run edgexfoundry.security-secretstore-setup
 sudo snap run edgexfoundry.security-consul-bootstrapper
+sudo snap restart edgexfoundry.kong-daemon
 sudo cp /var/snap/edgexfoundry/current/secrets/$ADDON_SERVICE/secrets-token.json .
 sudo chown $USER:$USER secrets-token.json
