@@ -24,11 +24,6 @@ slots:
     source:
       write: [$SNAP_DATA/device-ft232h-bme680]
 
-# plugs:
-#   device-config:
-#     interface: content 
-#     target: $SNAP_DATA/config/device-ft232h-bme680
-
 layout:
   /etc/udev/rules.d/11-ftdi.rules:
     bind-file: $SNAP/etc/udev/rules.d/11-ftdi.rules
@@ -82,21 +77,10 @@ parts:
     plugin: make
     build-packages:
       - git
-      # - libzmq3-dev
-      # - pkg-config
     build-snaps:
       - go/1.19/stable
-    stage-packages: 
-      - libzmq5
-      - ffmpeg
     override-build: |
       cd $CRAFT_PART_SRC
-      # the version is needed for the build
-      # cp $CRAFT_STAGE/version.txt VERSION
-      # make tidy
-      # make build
-      # install -DT "./cmd/device-usb-camera" "$CRAFT_PART_INSTALL/bin/device-usb-camera"
-
       go build -tags "no_zmq non_delayedstart" -o $CRAFT_PART_INSTALL/bin/device-ft232h-bme680 .
 
       cp -v *.py  $CRAFT_PART_INSTALL/bin/
